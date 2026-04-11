@@ -1,22 +1,26 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: AI YouTube Learning OS API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: video
+    description: Video data and transcript operations
+  - name: ai
+    description: AI-powered learning features
+  - name: progress
+    description: User learning progress
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +28,157 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /video/info:
+    get:
+      operationId: getVideoInfo
+      tags: [video]
+      summary: Get YouTube video metadata and transcript
+      parameters:
+        - name: videoId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Video info with transcript chunks
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VideoInfo"
+        "400":
+          description: Invalid video ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Video not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /ai/chat:
+    post:
+      operationId: aiChat
+      tags: [ai]
+      summary: Ask a question about the video
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+      responses:
+        "200":
+          description: AI answer with timestamps and confidence
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+
+  /ai/summarize:
+    post:
+      operationId: summarizeVideo
+      tags: [ai]
+      summary: Generate video summary and key takeaways
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoRequest"
+      responses:
+        "200":
+          description: Summary results
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SummaryResponse"
+
+  /ai/notes:
+    post:
+      operationId: generateNotes
+      tags: [ai]
+      summary: Generate notes from video transcript
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotesRequest"
+      responses:
+        "200":
+          description: Generated notes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotesResponse"
+
+  /ai/quiz:
+    post:
+      operationId: generateQuiz
+      tags: [ai]
+      summary: Generate MCQ quiz from video transcript
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VideoRequest"
+      responses:
+        "200":
+          description: Quiz questions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/QuizResponse"
+
+  /ai/stuck:
+    post:
+      operationId: imStuck
+      tags: [ai]
+      summary: Re-explain concept with analogy and simpler language
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/StuckRequest"
+      responses:
+        "200":
+          description: Simplified explanation with analogy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/StuckResponse"
+
+  /video/recommendations:
+    get:
+      operationId: getRecommendations
+      tags: [video]
+      summary: Get related video recommendations from YouTube
+      parameters:
+        - name: videoId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: query
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Recommended videos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RecommendationsResponse"
+
 components:
   schemas:
     HealthStatus:
@@ -31,6 +186,225 @@ components:
       properties:
         status:
           type: string
-      required:
-        - status
+      required: [status]
 
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        message:
+          type: string
+      required: [error, message]
+
+    TranscriptChunk:
+      type: object
+      properties:
+        text:
+          type: string
+        startTime:
+          type: number
+        endTime:
+          type: number
+      required: [text, startTime, endTime]
+
+    VideoInfo:
+      type: object
+      properties:
+        videoId:
+          type: string
+        title:
+          type: string
+        thumbnail:
+          type: string
+        channelName:
+          type: string
+        duration:
+          type: number
+        description:
+          type: string
+        hasTranscript:
+          type: boolean
+        chunks:
+          type: array
+          items:
+            $ref: "#/components/schemas/TranscriptChunk"
+      required: [videoId, title, thumbnail, channelName, duration, description, hasTranscript, chunks]
+
+    ChatMessage:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+      required: [role, content]
+
+    TimestampRef:
+      type: object
+      properties:
+        start:
+          type: number
+        end:
+          type: number
+      required: [start, end]
+
+    SuggestedVideo:
+      type: object
+      properties:
+        title:
+          type: string
+        url:
+          type: string
+        thumbnail:
+          type: string
+      required: [title, url, thumbnail]
+
+    ChatRequest:
+      type: object
+      properties:
+        videoId:
+          type: string
+        question:
+          type: string
+        history:
+          type: array
+          items:
+            $ref: "#/components/schemas/ChatMessage"
+        language:
+          type: string
+          enum: [en, hi, es]
+          default: en
+      required: [videoId, question]
+
+    ChatResponse:
+      type: object
+      properties:
+        answer:
+          type: string
+        simpleExplanation:
+          type: string
+        timestamps:
+          type: array
+          items:
+            $ref: "#/components/schemas/TimestampRef"
+        confidence:
+          type: string
+          enum: [high, medium, low]
+        suggestedVideos:
+          type: array
+          items:
+            $ref: "#/components/schemas/SuggestedVideo"
+      required: [answer, simpleExplanation, timestamps, confidence, suggestedVideos]
+
+    VideoRequest:
+      type: object
+      properties:
+        videoId:
+          type: string
+        language:
+          type: string
+          enum: [en, hi, es]
+          default: en
+      required: [videoId]
+
+    SummaryResponse:
+      type: object
+      properties:
+        shortSummary:
+          type: string
+        detailedSummary:
+          type: string
+        keyTakeaways:
+          type: array
+          items:
+            type: string
+      required: [shortSummary, detailedSummary, keyTakeaways]
+
+    NotesRequest:
+      type: object
+      properties:
+        videoId:
+          type: string
+        style:
+          type: string
+          enum: [short, bullet, detailed]
+          default: bullet
+        language:
+          type: string
+          enum: [en, hi, es]
+          default: en
+      required: [videoId]
+
+    NotesResponse:
+      type: object
+      properties:
+        notes:
+          type: string
+        style:
+          type: string
+      required: [notes, style]
+
+    QuizQuestion:
+      type: object
+      properties:
+        id:
+          type: string
+        question:
+          type: string
+        options:
+          type: array
+          items:
+            type: string
+        correctIndex:
+          type: number
+        explanation:
+          type: string
+      required: [id, question, options, correctIndex, explanation]
+
+    QuizResponse:
+      type: object
+      properties:
+        questions:
+          type: array
+          items:
+            $ref: "#/components/schemas/QuizQuestion"
+      required: [questions]
+
+    StuckRequest:
+      type: object
+      properties:
+        videoId:
+          type: string
+        concept:
+          type: string
+        language:
+          type: string
+          enum: [en, hi, es]
+          default: en
+      required: [videoId, concept]
+
+    StuckResponse:
+      type: object
+      properties:
+        simpleExplanation:
+          type: string
+        analogy:
+          type: string
+        timestamp:
+          $ref: "#/components/schemas/TimestampRef"
+        suggestedVideos:
+          type: array
+          items:
+            $ref: "#/components/schemas/SuggestedVideo"
+      required: [simpleExplanation, analogy, suggestedVideos]
+
+    RecommendationsResponse:
+      type: object
+      properties:
+        videos:
+          type: array
+          items:
+            $ref: "#/components/schemas/SuggestedVideo"
+      required: [videos]
