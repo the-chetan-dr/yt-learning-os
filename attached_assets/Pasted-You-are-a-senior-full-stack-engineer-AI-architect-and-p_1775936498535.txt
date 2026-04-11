@@ -1,0 +1,319 @@
+You are a senior full-stack engineer, AI architect, and product designer. Build a production-grade, highly scalable, AI-powered web application called:
+
+"AI YouTube Learning OS"
+
+This is NOT a simple project. It must behave like a real startup-level product with intelligent systems, robust error handling, dynamic input handling, and premium UI/UX.
+
+---
+
+PRIMARY OBJECTIVE:
+
+Transform ANY YouTube video URL (dynamic input, not pre-defined) into a fully interactive AI-powered learning system that allows users to:
+
+* Understand the video deeply
+* Ask questions contextually
+* Navigate using timestamps
+* Generate notes, quizzes, and insights
+* Receive recommendations
+* Track learning progress
+
+The system must work reliably for ANY valid YouTube link.
+
+---
+
+TECH STACK:
+
+Frontend:
+
+* React (Vite)
+* Tailwind CSS
+* Framer Motion (smooth premium animations)
+
+Backend:
+
+* Node.js + Express
+
+APIs:
+
+* OpenAI API (all AI tasks)
+* YouTube Data API v3 (metadata + search)
+* YouTube Transcript API (primary transcript source)
+
+State:
+
+* In-memory cache for transcripts
+* localStorage for user progress
+
+---
+
+SYSTEM DESIGN (MANDATORY):
+
+1. UNIVERSAL INPUT PARSER:
+
+* Accept all YouTube URL formats:
+
+  * youtube.com/watch?v=
+  * youtu.be/
+  * embed links
+* Extract video ID robustly
+* Validate and handle invalid input gracefully
+
+---
+
+2. VIDEO DATA PIPELINE:
+
+* Fetch:
+
+  * Title
+  * Thumbnail
+  * Channel name
+  * Duration
+
+* Display embedded player
+
+---
+
+3. TRANSCRIPT ENGINE (CRITICAL):
+
+Step 1:
+
+* Attempt transcript fetch via YouTube Transcript API
+
+Step 2 (Fallback):
+
+* Use video description + title if transcript unavailable
+
+Step 3:
+
+* Clean transcript (remove noise, normalize text)
+
+Step 4:
+
+* Preserve timestamps
+
+Step 5: CHUNKING SYSTEM
+
+* Split transcript into chunks (500–800 tokens)
+* Maintain structure:
+  {
+  text: "...",
+  startTime: seconds,
+  endTime: seconds
+  }
+
+Step 6:
+
+* Cache transcript per video (avoid refetching)
+
+---
+
+4. CONTEXT RETRIEVAL ENGINE:
+
+When user asks a question:
+
+* Perform relevance search across chunks:
+
+  * Keyword match + lightweight semantic scoring
+
+* Select top 3–5 relevant chunks
+
+* Combine and send ONLY those to OpenAI
+
+This ensures:
+
+* High accuracy
+* Low latency
+* No token overflow
+
+---
+
+5. AI INTELLIGENCE RULES (STRICT):
+
+The AI must:
+
+* Answer ONLY from provided context
+* NEVER hallucinate
+* If information is missing:
+  Respond exactly:
+  "This is not clearly covered in the video."
+
+Then:
+
+* Fetch and recommend 2–3 relevant videos via YouTube API
+
+ALWAYS INCLUDE:
+
+* Clear explanation
+* Simple explanation (ELI5 style)
+* Timestamp references
+* Confidence level
+
+---
+
+6. STRUCTURED RESPONSE FORMAT (MANDATORY):
+
+Return JSON:
+
+{
+"answer": "...",
+"simpleExplanation": "...",
+"timestamps": [
+{ "start": 130, "end": 240 }
+],
+"confidence": "high | medium | low",
+"suggestedVideos": [
+{
+"title": "...",
+"url": "...",
+"thumbnail": "..."
+}
+]
+}
+
+---
+
+7. CORE FEATURES:
+
+A. VIDEO PLAYER:
+
+* Embedded YouTube player
+* Clicking timestamp seeks video
+
+B. AI CHAT SYSTEM:
+
+* Context-aware chat
+* Maintains conversation history
+* Typing animation
+* Streaming responses (if possible)
+
+C. AUTO SUMMARIZATION:
+
+* Short summary (5 lines)
+* Detailed summary
+* Key takeaways
+
+D. NOTES ENGINE:
+
+* Short notes
+* Bullet notes
+* Detailed notes
+* Copy/export option
+
+E. QUIZ ENGINE:
+
+* Generate 5–10 MCQs
+* Show answers + scoring
+* Based strictly on transcript
+
+F. MULTI-LANGUAGE SYSTEM:
+
+* English
+* Hindi
+* Spanish
+* Dynamic switching
+
+G. "I'M STUCK" MODE:
+When activated:
+
+* Re-explain simply
+* Provide analogy
+* Show timestamp
+* Recommend better videos
+
+H. RECOMMENDATION ENGINE:
+
+* Fetch related videos using YouTube API
+* Trigger after:
+
+  * Summary
+  * Quiz
+  * Stuck mode
+
+I. PROGRESS TRACKER:
+
+* Track:
+
+  * Videos watched
+  * Estimated time spent
+* Store in localStorage
+* Show streak UI
+
+---
+
+8. EDGE CASE HANDLING:
+
+* Invalid URL → show error UI
+* No transcript → fallback logic
+* API failure → retry once + fallback message
+* Empty AI response → regenerate once
+* Long videos → enforce chunking strictly
+
+---
+
+9. PERFORMANCE OPTIMIZATION:
+
+* Cache transcripts per video
+* Debounce chat input
+* Prevent duplicate API calls
+* Lazy load components
+
+---
+
+10. UI / UX (PREMIUM REQUIREMENT):
+
+Design must feel:
+
+* Futuristic
+* Luxury
+* Addictive
+
+Requirements:
+
+* Dark mode default
+
+* Glassmorphism (blur, transparency)
+
+* Smooth animations (Framer Motion)
+
+* Layout:
+  Left → Video
+  Right → AI panel
+
+* Floating buttons:
+
+  * Notes
+  * Quiz
+  * I'm Stuck
+
+* Add:
+
+  * Skeleton loaders
+  * Typing animation
+  * Smooth transitions
+  * Clean scrollbars
+
+---
+
+11. ENV VARIABLES:
+
+OPENAI_API_KEY=
+YOUTUBE_API_KEY=
+
+---
+
+12. FINAL EXPECTATION:
+
+The product must:
+
+* Work with ANY YouTube video dynamically
+* Provide intelligent, context-aware responses
+* Feel like a real AI learning platform
+* Be smooth, fast, and visually premium
+* Be addictive and highly usable
+
+This must NOT look like a student project.
+
+It must feel like:
+A real startup product ready for users.
+
+---
