@@ -6,3 +6,9 @@ id = "JBEdhunf_LDumlonqr9EC"
 uri = "file://lumina-os-code.tar.gz"
 type = "unspecified"
 title = "Lumina OS — Full Source Code"
+
+[[outputs]]
+id = "5QTwR-jEtqR1JcgaT10fm"
+uri = "file://lumina-os-final.tar.gz"
+type = "unspecified"
+title = "Lumina OS — Complete Source Code (Local-Ready)"
