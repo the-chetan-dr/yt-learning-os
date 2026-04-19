@@ -15,7 +15,7 @@ import type {
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
-
+const BASE_URL = "http://localhost:3001";
 import type {
   ChatRequest,
   ChatResponse,
@@ -47,7 +47,7 @@ type SecondParameter<T extends (...args: never) => unknown> = Parameters<T>[1];
  * @summary Health check
  */
 export const getHealthCheckUrl = () => {
-  return `/api/healthz`;
+  return `${BASE_URL}/api/healthz`;
 };
 
 export const healthCheck = async (
@@ -133,8 +133,8 @@ export const getGetVideoInfoUrl = (params: GetVideoInfoParams) => {
   const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
-    ? `/api/video/info?${stringifiedParams}`
-    : `/api/video/info`;
+    ? `${BASE_URL}/api/video/info?${stringifiedParams}`
+    : `${BASE_URL}/api/video/info`;
 };
 
 export const getVideoInfo = async (
@@ -216,7 +216,7 @@ export function useGetVideoInfo<
  * @summary Ask a question about the video
  */
 export const getAiChatUrl = () => {
-  return `/api/ai/chat`;
+  return `${BASE_URL}/api/ai/chat`;
 };
 
 export const aiChat = async (
@@ -302,7 +302,7 @@ export const useAiChat = <
  * @summary Generate video summary and key takeaways
  */
 export const getSummarizeVideoUrl = () => {
-  return `/api/ai/summarize`;
+  return `${BASE_URL}/api/ai/summarize`;
 };
 
 export const summarizeVideo = async (
@@ -388,7 +388,7 @@ export const useSummarizeVideo = <
  * @summary Generate notes from video transcript
  */
 export const getGenerateNotesUrl = () => {
-  return `/api/ai/notes`;
+  return `${BASE_URL}/api/ai/notes`;
 };
 
 export const generateNotes = async (
@@ -474,7 +474,7 @@ export const useGenerateNotes = <
  * @summary Generate MCQ quiz from video transcript
  */
 export const getGenerateQuizUrl = () => {
-  return `/api/ai/quiz`;
+  return `${BASE_URL}/api/ai/quiz`;
 };
 
 export const generateQuiz = async (
@@ -560,7 +560,7 @@ export const useGenerateQuiz = <
  * @summary Re-explain concept with analogy and simpler language
  */
 export const getImStuckUrl = () => {
-  return `/api/ai/stuck`;
+  return `${BASE_URL}/api/ai/stuck`;
 };
 
 export const imStuck = async (
@@ -657,8 +657,8 @@ export const getGetRecommendationsUrl = (params: GetRecommendationsParams) => {
   const stringifiedParams = normalizedParams.toString();
 
   return stringifiedParams.length > 0
-    ? `/api/video/recommendations?${stringifiedParams}`
-    : `/api/video/recommendations`;
+    ? `${BASE_URL}/api/video/recommendations?${stringifiedParams}`
+    : `${BASE_URL}/api/video/recommendations`;
 };
 
 export const getRecommendations = async (

@@ -1,3 +1,4 @@
+import "dotenv/config";
 import OpenAI from "openai";
 import { getCached, setCached } from "./videoCache.js";
 import type { TranscriptChunk } from "./youtube.js";
@@ -13,7 +14,7 @@ const LANGUAGE_PROMPTS: Record<string, string> = {
 function relevantChunks(
   chunks: TranscriptChunk[],
   question: string,
-  topN = 5
+  topN = 5,
 ): TranscriptChunk[] {
   if (chunks.length === 0) return [];
   const words = question
@@ -40,7 +41,7 @@ function buildContext(chunks: TranscriptChunk[]): string {
   return chunks
     .map(
       (c) =>
-        `[${Math.floor(c.startTime)}s-${Math.floor(c.endTime)}s]: ${c.text}`
+        `[${Math.floor(c.startTime)}s-${Math.floor(c.endTime)}s]: ${c.text}`,
     )
     .join("\n\n");
 }
@@ -122,7 +123,9 @@ Return ONLY valid JSON in this exact format:
   return {
     answer: parsed.answer ?? "This is not clearly covered in the video.",
     simpleExplanation: parsed.simpleExplanation ?? "",
-    timestamps: parsed.timestamps ?? top.slice(0, 2).map((c) => ({ start: c.startTime, end: c.endTime })),
+    timestamps:
+      parsed.timestamps ??
+      top.slice(0, 2).map((c) => ({ start: c.startTime, end: c.endTime })),
     confidence: (parsed.confidence as "high" | "medium" | "low") ?? "low",
     suggestedVideos: notCovered ? params.suggestedVideos : [],
   };
@@ -176,7 +179,8 @@ export async function summarizeVideo(params: {
 
   return {
     shortSummary: parsed.shortSummary ?? "Summary not available.",
-    detailedSummary: parsed.detailedSummary ?? "Detailed summary not available.",
+    detailedSummary:
+      parsed.detailedSummary ?? "Detailed summary not available.",
     keyTakeaways: parsed.keyTakeaways ?? [],
   };
 }
@@ -194,8 +198,10 @@ export async function generateNotes(params: {
     .slice(0, 8000);
 
   const styleGuide = {
-    short: "Generate concise short notes (3-5 sentences max). Focus on the most important points only.",
-    bullet: "Generate structured bullet-point notes with clear headings and sub-bullets. Use markdown formatting.",
+    short:
+      "Generate concise short notes (3-5 sentences max). Focus on the most important points only.",
+    bullet:
+      "Generate structured bullet-point notes with clear headings and sub-bullets. Use markdown formatting.",
     detailed:
       "Generate comprehensive detailed notes with sections, subsections, and thorough explanations. Use markdown formatting.",
   }[style];
@@ -215,7 +221,9 @@ export async function generateNotes(params: {
     temperature: 0.4,
   });
 
-  return completion.choices[0]?.message?.content ?? "Notes could not be generated.";
+  return (
+    completion.choices[0]?.message?.content ?? "Notes could not be generated."
+  );
 }
 
 export async function generateQuiz(params: {
@@ -337,7 +345,8 @@ Return ONLY valid JSON:
   const ts = top[0] ? { start: top[0].startTime, end: top[0].endTime } : null;
 
   return {
-    simpleExplanation: parsed.simpleExplanation ?? "Let me explain this more simply.",
+    simpleExplanation:
+      parsed.simpleExplanation ?? "Let me explain this more simply.",
     analogy: parsed.analogy ?? "Think of it like...",
     timestamp: ts,
   };
